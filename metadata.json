@@ -1,0 +1,6 @@
+{
+  "name": "Thí Nghiệm Ảo Carbohydrate - Glucose & Fructose (Hóa 12)",
+  "description": "Ứng dụng phòng thí nghiệm ảo tương tác cao cấp minh họa hợp chất Glucose và Fructose cho bài học Hóa học 12 Chương trình 2018.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
