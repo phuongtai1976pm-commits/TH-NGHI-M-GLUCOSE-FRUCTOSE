@@ -224,12 +224,12 @@ export const EXPERIMENTS: ExperimentDefinition[] = [
       },
       {
         stepNumber: 4,
-        instruction: 'Ngâm ống nghiệm vào cốc thủy tinh chứa nước nóng (60-70°C) trong vài phút.',
+        instruction: 'Đun nóng ống nghiệm hoặc ngâm vào cốc nước nóng (60-70°C) trong 30 giây.',
         requiredEquipment: 'waterbath',
-        actionPrompt: 'Nhấp nút "Ngâm Cốc Nước Nóng (65°C)"',
+        actionPrompt: 'Bấm nút "ĐUN NÓNG" hoặc "NGÂM NƯỚC NÓNG", chờ 30 giây để lớp bạc Ag sáng bóng bám lên thành ống',
       }
     ],
-    phenomenon: 'Thành trong của ống nghiệm dần xuất hiện một lớp kim loại bạc (Ag) màu xám sáng bóng bám vào như gương.',
+    phenomenon: 'Sau khoảng 30 giây ngâm nước nóng (65°C), thành trong của ống nghiệm xuất hiện lớp kim loại bạc (Ag) sáng bóng bám chặt vào như chiếc gương.',
     chemicalExplanation: 'Nhóm aldehyde (-CHO) trong Glucose bị oxi hóa bởi phức bạc Tollens [Ag(NH₃)₂]OH tạo thành Ammonium Gluconate và giải phóng kim loại bạc (Ag) kết tinh bám chặt thành thủy tinh. (Fructose cũng phản ứng do chuyển thành Glucose trong môi trường kiềm NH₃).',
     chemicalEquation: 'CH₂OH[CHOH]₄CHO + 2[Ag(NH₃)₂]OH -(t°)→ CH₂OH[CHOH]₄COONH₄ + 2Ag↓ + 3NH₃ + H₂O',
     simplifiedEquation: 'Glucose + 2[Ag(NH₃)₂]OH -(t°)→ Ammonium Gluconate + 2Ag↓ (sáng bóng) + 3NH₃ + H₂O',
@@ -308,10 +308,10 @@ export const EXPERIMENTS: ExperimentDefinition[] = [
       }
     ],
     phenomenon: 'Trong ống nghiệm có nhiều bọt khí sủi lên liên tục. Khí CO₂ dẫn qua cốc nước vôi trong làm dung dịch Ca(OH)₂ xuất hiện váng đục trắng CaCO₃.',
-    chemicalExplanation: 'Dưới tác dụng của enzyme có trong men rượu ở nhiệt độ thích hợp (30-35°C), phân tử Glucose bị lên men phân hủy tạo thành Alcohol ethylic (Ethanol) và giải phóng khí Carbon dioxide (CO₂).',
-    chemicalEquation: 'C₆H₁₂O₆ -(enzyme, 30-35°C)→ 2C₂H₅OH + 2CO₂↑',
-    simplifiedEquation: 'Glucose -(men rượu)→ 2 Ethanol + 2 CO₂↑ (sủi bọt khí)',
-    distinguishingNote: 'Phản ứng lên men Glucose là cơ sở sản xuất rượu, bia, bánh mì, cồn sinh học y tế và nhiên liệu sinh học E5.',
+    chemicalExplanation: 'Dưới tác dụng của enzyme (zymase) có trong nấm men ở nhiệt độ 30-35°C, phân tử Glucose và Fructose đều bị lên men rượu tạo thành Ethanol (C₂H₅OH) và khí CO₂. (Fructose được nấm men chuyển hóa qua con đường đường phân glycolysis tương tự glucose).',
+    chemicalEquation: 'C₆H₁₂O₆ (Glucose / Fructose) -(enzyme zymase, 30-35°C)→ 2C₂H₅OH + 2CO₂↑',
+    simplifiedEquation: 'Glucose / Fructose -(men rượu)→ 2 Ethanol + 2 CO₂↑ (sủi bọt khí)',
+    distinguishingNote: '💡 Lưu ý Hóa học: Cả Glucose và Fructose ĐỀU CÓ THỂ LÊN MEN RƯỢU! Lên men từ mật nho, trái cây chứa nhiều fructose cũng sinh ra rượu vang. Trong SGK Hóa 12 tập trung viết phương trình lên men của Glucose làm đại diện.',
     resultLiquidColor: 'rgba(254, 243, 199, 0.6)',
     resultPrecipitate: {
       color: '#ffffff',
@@ -429,9 +429,14 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
   {
     id: 2,
     question: 'Để phân biệt hai dung dịch Glucose và Fructose mất nhãn, thuốc thử nào sau đây là tối ưu nhất?',
-    options: ['Dung dịch Cu(OH)₂ ở nhiệt độ thường', 'Thuốc thử Tollens [Ag(NH₃)₂]OH', 'Dung dịch Nước Bromine (Br₂)', 'Dung dịch NaOH nóng'],
+    options: [
+      'Dung dịch Cu(OH)₂ ở nhiệt độ thường',
+      'Thuốc thử Tollens [Ag(NH₃)₂]OH',
+      'Dung dịch nước Bromine (Br₂)',
+      'Dung dịch NaOH nóng'
+    ],
     correctAnswer: 2,
-    explanation: 'Dung dịch nước Bromine phản ứng oxi hóa Glucose (làm mất màu vàng cam), còn Fructose không phản ứng (không làm mất màu). Thuốc thử Tollens và Cu(OH)₂ trong môi trường kiềm đều phản ứng với cả 2 chất do Fructose chuyển hóa thành Glucose.',
+    explanation: 'Dung dịch nước Bromine phản ứng oxi hóa Glucose (làm mất màu đỏ nâu đặc trưng), còn Fructose không phản ứng (giữ nguyên màu đỏ nâu). Thuốc thử Tollens và Cu(OH)₂ trong môi trường kiềm đều phản ứng với cả hai chất do Fructose đồng hóa chuyển hóa thành Glucose.',
     difficulty: 'Thông hiểu'
   },
   {

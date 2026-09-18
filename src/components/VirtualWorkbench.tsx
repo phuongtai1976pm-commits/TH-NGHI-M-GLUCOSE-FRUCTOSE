@@ -76,20 +76,25 @@ export const VirtualWorkbench: React.FC<VirtualWorkbenchProps> = ({
 
           {/* Silver Mirror Coating Layer (for Tollens reaction) */}
           {tube.hasSilverMirror && (
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-200 via-slate-300 to-slate-400 opacity-95 shadow-inner z-20 flex items-center justify-center animate-fade-in border-r-2 border-slate-100">
-              <div className="text-[10px] text-slate-900 font-extrabold rotate-90 tracking-wider uppercase whitespace-nowrap bg-white/90 px-2 py-0.5 rounded shadow-xs">
-                Tráng Bạc Ag
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-100 via-slate-200 to-slate-400 opacity-95 shadow-[inset_0_0_12px_rgba(255,255,255,0.9)] z-20 flex flex-col items-center justify-center animate-fade-in border-x border-slate-100">
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/80 to-transparent opacity-90 pointer-events-none animate-pulse" />
+              <div className="text-[10px] text-slate-900 font-extrabold rotate-90 tracking-wider uppercase whitespace-nowrap bg-white/95 px-2 py-0.5 rounded shadow-xs border border-slate-300 z-10 select-none">
+                ✨ Lớp Gương Bạc Ag
               </div>
             </div>
           )}
 
-          {/* Gas Bubbles Animation (For Fermentation) */}
+          {/* Gas Bubbles Animation (For Fermentation CO2) */}
           {tube.hasBubbles && (
             <div className="absolute inset-0 z-15 pointer-events-none overflow-hidden">
-              <div className="absolute bottom-4 left-3 w-2 h-2 bg-indigo-500/80 rounded-full animate-ping" />
-              <div className="absolute bottom-12 right-4 w-2.5 h-2.5 bg-indigo-400/70 rounded-full animate-bounce" />
-              <div className="absolute bottom-20 left-4 w-1.5 h-1.5 bg-indigo-600/90 rounded-full animate-pulse" />
-              <div className="absolute bottom-28 right-3 w-2 h-2 bg-indigo-500/80 rounded-full animate-ping" />
+              <div className="absolute bottom-6 left-3 w-3 h-3 bg-amber-200/90 border border-white/80 rounded-full animate-bounce shadow-xs" />
+              <div className="absolute bottom-14 right-3 w-2.5 h-2.5 bg-amber-100/90 border border-white/80 rounded-full animate-pulse shadow-xs" />
+              <div className="absolute bottom-24 left-4 w-3.5 h-3.5 bg-white/95 border border-amber-300 rounded-full animate-ping shadow-xs" />
+              <div className="absolute bottom-36 right-4 w-2 h-2 bg-amber-200/90 border border-white/80 rounded-full animate-bounce shadow-xs" />
+              <div className="absolute bottom-48 left-2 w-2.5 h-2.5 bg-white/90 rounded-full animate-pulse" />
+              <div className="absolute top-2 right-2 bg-amber-600/90 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-xs uppercase tracking-wider">
+                CO₂ ↑
+              </div>
             </div>
           )}
 
@@ -155,8 +160,16 @@ export const VirtualWorkbench: React.FC<VirtualWorkbenchProps> = ({
               🔥 Cu₂O Đỏ Gạch
             </span>
           ) : tube.hasSilverMirror ? (
-            <span className="text-[10px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-300 shadow-2xs block">
-              🪞 Tráng Bạc Ag
+            <span className="text-[10px] font-bold text-slate-900 bg-gradient-to-r from-slate-100 via-white to-slate-200 px-2 py-0.5 rounded-full border border-slate-400 shadow-2xs block animate-pulse">
+              🪞 Lớp Bạc Ag Sáng Bóng
+            </span>
+          ) : (tube.isHeated || tube.isInWaterBath) && (tube.heatingSeconds !== undefined && tube.heatingSeconds > 0 && !tube.hasSilverMirror) ? (
+            <span className="text-[10px] font-bold text-orange-800 bg-orange-100 px-2 py-0.5 rounded-full border border-orange-300 shadow-2xs block">
+              🔥 Đun nóng ({tube.heatingSeconds}s/30s)
+            </span>
+          ) : tube.hasBubbles ? (
+            <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300 shadow-2xs block animate-bounce">
+              🫧 Sủi Bọt Khí CO₂
             </span>
           ) : tube.statusText.includes('xanh lam') ? (
             <span className="text-[10px] font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-300 shadow-2xs block">

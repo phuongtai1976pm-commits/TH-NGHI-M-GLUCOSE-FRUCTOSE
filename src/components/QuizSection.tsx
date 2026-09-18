@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { QUIZ_QUESTIONS } from '../data/chemistryData';
-import { CheckCircle, XCircle, Award, RotateCcw, HelpCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, XCircle, Award, RotateCcw, HelpCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+
+const OPTION_LETTERS = ['A', 'B', 'C', 'D'] as const;
 
 export const QuizSection: React.FC = () => {
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -33,7 +35,7 @@ export const QuizSection: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-3 sm:p-6 space-y-6">
+    <div className="notranslate max-w-4xl mx-auto p-3 sm:p-6 space-y-6" translate="no">
       {/* Header */}
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -44,7 +46,7 @@ export const QuizSection: React.FC = () => {
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Các câu hỏi bám sát ma trận đề thi SGK Hóa 12 (2018) - Bài 4 Carbohydrate: Glucose & Fructose.
+            Các câu hỏi bám sát ma trận đề thi SGK Hóa 12 (Chương trình GDPT 2018) — Bài 4 Carbohydrate: Glucose & Fructose.
           </p>
         </div>
 
@@ -58,9 +60,49 @@ export const QuizSection: React.FC = () => {
         )}
       </div>
 
+      {/* Question quick jump pagination bar */}
+      {!showResult && (
+        <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex items-center justify-between gap-2 overflow-x-auto">
+          <div className="flex items-center space-x-1.5 min-w-max">
+            {QUIZ_QUESTIONS.map((q, qIdx) => {
+              const answered = selectedAnswers[qIdx] !== undefined;
+              const correct = selectedAnswers[qIdx] === q.correctAnswer;
+              const isCurrent = qIdx === currentIdx;
+
+              let badgeStyle = 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200';
+              if (isCurrent) {
+                badgeStyle = 'bg-indigo-700 text-white border-indigo-800 ring-2 ring-indigo-300 font-extrabold shadow-xs';
+              } else if (answered) {
+                badgeStyle = correct
+                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold'
+                  : 'bg-rose-100 text-rose-800 border-rose-300 font-bold';
+              }
+
+              return (
+                <button
+                  key={`nav-${q.id}`}
+                  onClick={() => setCurrentIdx(qIdx)}
+                  className={`w-8 h-8 rounded-lg border text-xs flex items-center justify-center transition cursor-pointer ${badgeStyle}`}
+                  title={`Câu ${qIdx + 1}`}
+                >
+                  {qIdx + 1}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="text-[11px] text-slate-500 shrink-0 font-medium hidden sm:block">
+            Đã làm: {Object.keys(selectedAnswers).length}/{QUIZ_QUESTIONS.length}
+          </div>
+        </div>
+      )}
+
       {/* Main Quiz Area */}
       {!showResult ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6">
+        <div
+          key={`question-container-${question.id}`}
+          className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6 animate-fade-in"
+        >
           {/* Question Title & Level Badge */}
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -73,14 +115,14 @@ export const QuizSection: React.FC = () => {
               }`}>
                 Mức độ: {question.difficulty}
               </span>
-              <h3 className="text-sm sm:text-base font-bold text-slate-800 mt-2 leading-snug">
+              <h3 className="notranslate text-sm sm:text-base font-bold text-slate-800 mt-2 leading-snug">
                 Câu {currentIdx + 1}: {question.question}
               </h3>
             </div>
           </div>
 
-          {/* Options Grid */}
-          <div className="space-y-2.5">
+          {/* Options Grid with explicit keys per question and option */}
+          <div key={`options-list-${question.id}`} className="space-y-2.5">
             {question.options.map((opt, optIdx) => {
               const selected = selectedAnswers[currentIdx] === optIdx;
               const isOptionCorrect = optIdx === question.correctAnswer;
@@ -98,16 +140,19 @@ export const QuizSection: React.FC = () => {
 
               return (
                 <button
-                  key={optIdx}
+                  key={`q-${question.id}-opt-${optIdx}`}
                   onClick={() => handleSelectOption(optIdx)}
                   disabled={isAnswered}
                   className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between text-xs ${btnStyle}`}
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="w-6 h-6 rounded-lg bg-white border border-slate-300 font-mono font-bold text-slate-700 flex items-center justify-center shrink-0 shadow-xs">
-                      {String.fromCharCode(65 + optIdx)}
+                    <span
+                      translate="no"
+                      className="notranslate w-7 h-7 rounded-lg bg-white border border-slate-300 font-mono font-bold text-slate-800 flex items-center justify-center shrink-0 shadow-xs select-none"
+                    >
+                      {OPTION_LETTERS[optIdx]}
                     </span>
-                    <span className="font-medium">{opt}</span>
+                    <span className="font-medium text-slate-800 leading-relaxed">{opt}</span>
                   </div>
 
                   {isAnswered && isOptionCorrect && (
@@ -141,16 +186,17 @@ export const QuizSection: React.FC = () => {
             <button
               onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
               disabled={currentIdx === 0}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold transition cursor-pointer"
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer"
             >
-              ← Câu Trước
+              <ArrowLeft className="w-4 h-4" />
+              <span>Câu Trước</span>
             </button>
 
             {currentIdx < QUIZ_QUESTIONS.length - 1 ? (
               <button
                 onClick={() => setCurrentIdx(prev => prev + 1)}
                 disabled={!isAnswered}
-                className="px-5 py-2 bg-indigo-700 hover:bg-indigo-800 disabled:opacity-40 text-white rounded-lg text-xs font-bold shadow-xs transition flex items-center space-x-1 cursor-pointer"
+                className="px-5 py-2 bg-indigo-700 hover:bg-indigo-800 disabled:opacity-40 text-white rounded-lg text-xs font-bold shadow-xs transition flex items-center space-x-1.5 cursor-pointer"
               >
                 <span>Câu Tiếp Theo</span>
                 <ArrowRight className="w-4 h-4" />
@@ -197,4 +243,5 @@ export const QuizSection: React.FC = () => {
     </div>
   );
 };
+
 

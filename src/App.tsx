@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TabType, TestTubeContent, ExperimentDefinition } from './types';
 import { EXPERIMENTS, REAGENTS } from './data/chemistryData';
 import { Navbar } from './components/Navbar';
@@ -206,25 +206,35 @@ export default function App() {
 
     // 3. Tollens Silver Mirror Reaction
     else if (hasAgNO3 && hasNH3) {
-      if (isInWaterBath && (hasGlucose || hasFructose)) {
+      if (prev.hasSilverMirror || (prev.heatingSeconds && prev.heatingSeconds >= 30)) {
         hasSilverMirror = true;
         liquidColor = 'rgba(226, 232, 240, 0.6)';
-        statusText = 'Phản ứng tráng bạc: Lớp bạc Ag sáng bóng bám vào thành ống nghiệm!';
+        statusText = '🪞 Đun nóng đủ 30 giây: Lớp bạc kim loại Ag sáng bóng bám chặt vào thành ống nghiệm!';
+      } else if (hasGlucose || hasFructose) {
+        if (isHeated || isInWaterBath) {
+          liquidColor = 'rgba(241, 245, 249, 0.7)';
+          const sec = prev.heatingSeconds || 0;
+          statusText = `🔥 Đang đun nóng ống nghiệm... (${sec}s/30s)`;
+        } else {
+          liquidColor = 'rgba(241, 245, 249, 0.7)';
+          statusText = 'Đã hòa trộn phức Tollens và đường. Hãy bấm "ĐUN NÓNG" hoặc "NGÂM NƯỚC NÓNG" trong 30 giây để quan sát lớp bạc Ag.';
+        }
       } else {
         liquidColor = 'rgba(241, 245, 249, 0.6)';
         statusText = 'Tạo dung dịch phức Tollens [Ag(NH₃)₂]OH trong suốt.';
       }
     }
 
-    // 4. Fermentation Reaction
-    else if (hasGlucose && hasYeast) {
-      if (isInWaterBath) {
+    // 4. Fermentation Reaction (Both Glucose and Fructose undergo alcoholic fermentation)
+    else if ((hasGlucose || hasFructose) && hasYeast) {
+      const sugarName = hasGlucose && hasFructose ? 'Glucose & Fructose' : hasGlucose ? 'Glucose' : 'Fructose';
+      if (isInWaterBath || isHeated) {
         hasBubbles = true;
         liquidColor = 'rgba(254, 243, 199, 0.8)';
-        statusText = 'Lên men Glucose sinh ra khí CO₂ sủi bọt liên tục!';
+        statusText = `🫧 Lên men ${sugarName}: Dưới tác dụng của enzyme men rượu (30-35°C), ${sugarName} lên men tạo Ethanol (C₂H₅OH) và sủi bọt khí CO₂↑ liên tục!`;
       } else {
         liquidColor = 'rgba(254, 243, 199, 0.7)';
-        statusText = 'Hỗn dịch Glucose và Men rượu sẵn sàng lên men.';
+        statusText = `Hỗn dịch ${sugarName} và Men rượu sẵn sàng. Bấm "NGÂM NƯỚC NÓNG" hoặc "ĐUN NÓNG" nhẹ (30-35°C) để enzyme lên men sủi bọt khí CO₂!`;
       }
     }
 
@@ -239,6 +249,7 @@ export default function App() {
       isHeated,
       isInWaterBath,
       temperatureC,
+      heatingSeconds: prev.heatingSeconds || 0,
       statusText,
       completed: true
     };
@@ -253,6 +264,7 @@ export default function App() {
       liquidColor: 'linear-gradient(180deg, rgba(224, 242, 254, 0.85) 0%, rgba(186, 230, 253, 0.9) 100%)',
       liquidLevelPercent: 0,
       temperatureC: 25,
+      heatingSeconds: 0,
       statusText: 'Ống 1 đã được rửa sạch.',
       currentStepIndex: 0,
       completed: false
@@ -265,6 +277,7 @@ export default function App() {
       liquidColor: 'linear-gradient(180deg, rgba(224, 242, 254, 0.85) 0%, rgba(186, 230, 253, 0.9) 100%)',
       liquidLevelPercent: 0,
       temperatureC: 25,
+      heatingSeconds: 0,
       statusText: 'Ống 2 đã được rửa sạch.',
       currentStepIndex: 0,
       completed: false
@@ -375,7 +388,7 @@ export default function App() {
         completed: true
       });
     } else if (exp.id === 'exp3_tollens_mirror') {
-      // Tollens silver mirror comparison
+      // Tollens silver mirror comparison (Both Glucose and Fructose react due to alkaline NH3 isomerization)
       setTube1({
         id: 'tube1',
         label: 'Ống 1 (Glucose)',
@@ -389,24 +402,25 @@ export default function App() {
         temperatureC: 65,
         isInWaterBath: true,
         hasSilverMirror: true,
-        statusText: '🪞 Ngâm nước nóng: Lớp bạc Ag sáng bóng bám chặt thành ống nghiệm!',
+        statusText: '🪞 Sau 30 giây ngâm nước nóng: Lớp bạc kim loại Ag sáng bóng bám chặt vào thành ống nghiệm!',
         currentStepIndex: 3,
         completed: true
       });
 
       setTube2({
         id: 'tube2',
-        label: 'Ống 2 (Mẫu Nước Cất)',
+        label: 'Ống 2 (Fructose)',
         addedReagents: [
           { reagentId: 'agno3_1', volumeMl: 2 },
           { reagentId: 'nh3_5', volumeMl: 1 },
-          { reagentId: 'distilled_water', volumeMl: 2 }
+          { reagentId: 'fructose_2', volumeMl: 2 }
         ],
-        liquidColor: 'rgba(241, 245, 249, 0.6)',
+        liquidColor: 'rgba(226, 232, 240, 0.6)',
         liquidLevelPercent: 60,
         temperatureC: 65,
         isInWaterBath: true,
-        statusText: 'Mẫu đối chứng nước cất: Không xảy ra phản ứng tráng bạc.',
+        hasSilverMirror: true,
+        statusText: '🪞 Sau 30 giây: Fructose trong môi trường kiềm NH₃ chuyển thành Glucose và cũng tạo lớp bạc Ag sáng bóng!',
         currentStepIndex: 3,
         completed: true
       });
@@ -491,6 +505,93 @@ export default function App() {
       setTube2(prev => calculateTubeState(prev, undefined, 'shake'));
     }
   };
+
+  // Helper to check if a tube is actively being heated with Tollens reactants
+  const isHeatingTollens = (t: TestTubeContent) => {
+    const hasAgNO3 = t.addedReagents.some(r => r.reagentId === 'agno3_1');
+    const hasNH3 = t.addedReagents.some(r => r.reagentId === 'nh3_5');
+    const hasSugar = t.addedReagents.some(r => r.reagentId === 'glucose_2' || r.reagentId === 'fructose_2');
+    const isHeated = t.isHeated || t.isInWaterBath;
+    return hasAgNO3 && hasNH3 && hasSugar && isHeated && !t.hasSilverMirror;
+  };
+
+  // Background 30-second heating timer: counts exactly 30s of active heating
+  useEffect(() => {
+    const heating1 = isHeatingTollens(tube1);
+    const heating2 = isHeatingTollens(tube2);
+
+    if (!heating1 && !heating2) return;
+
+    const interval = setInterval(() => {
+      if (heating1) {
+        setTube1(prev => {
+          if (!isHeatingTollens(prev)) return prev;
+          const nextSec = (prev.heatingSeconds || 0) + 1;
+          const hasGlucose = prev.addedReagents.some(r => r.reagentId === 'glucose_2');
+
+          if (nextSec >= 30) {
+            playSound('success');
+            return {
+              ...prev,
+              heatingSeconds: 30,
+              hasSilverMirror: true,
+              liquidColor: 'rgba(226, 232, 240, 0.6)',
+              statusText: hasGlucose
+                ? 'Đun nóng đủ 30 giây: Glucose bị oxi hóa, lớp bạc kim loại Ag sáng bóng bám chặt vào thành ống nghiệm!'
+                : 'Đun nóng đủ 30 giây: Fructose chuyển hóa tạo lớp bạc kim loại Ag sáng bóng!',
+              completed: true
+            };
+          } else {
+            return {
+              ...prev,
+              heatingSeconds: nextSec,
+              statusText: `🔥 Đang đun nóng ống nghiệm... (${nextSec}s/30s)`
+            };
+          }
+        });
+      }
+
+      if (heating2) {
+        setTube2(prev => {
+          if (!isHeatingTollens(prev)) return prev;
+          const nextSec = (prev.heatingSeconds || 0) + 1;
+          const hasGlucose = prev.addedReagents.some(r => r.reagentId === 'glucose_2');
+
+          if (nextSec >= 30) {
+            playSound('success');
+            return {
+              ...prev,
+              heatingSeconds: 30,
+              hasSilverMirror: true,
+              liquidColor: 'rgba(226, 232, 240, 0.6)',
+              statusText: hasGlucose
+                ? 'Đun nóng đủ 30 giây: Glucose bị oxi hóa, lớp bạc kim loại Ag sáng bóng bám chặt vào thành ống nghiệm!'
+                : 'Đun nóng đủ 30 giây: Fructose chuyển hóa tạo lớp bạc kim loại Ag sáng bóng!',
+              completed: true
+            };
+          } else {
+            return {
+              ...prev,
+              heatingSeconds: nextSec,
+              statusText: `🔥 Đang đun nóng ống nghiệm... (${nextSec}s/30s)`
+            };
+          }
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [
+    tube1.isHeated,
+    tube1.isInWaterBath,
+    tube1.hasSilverMirror,
+    tube1.addedReagents,
+    tube2.isHeated,
+    tube2.isInWaterBath,
+    tube2.hasSilverMirror,
+    tube2.addedReagents,
+    soundEnabled
+  ]);
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans flex flex-col selection:bg-indigo-600 selection:text-white">

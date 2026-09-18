@@ -66,6 +66,7 @@ export interface TestTubeContent {
   isHeated?: boolean;
   isInWaterBath?: boolean;
   temperatureC: number;
+  heatingSeconds?: number;
   hasBubbles?: boolean;
   statusText: string;
   currentStepIndex: number;
